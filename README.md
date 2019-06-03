@@ -24,3 +24,15 @@ endjoy suicide # Stop monitoring the directory and delete all temporary files cr
 
 ## Why the name?
 ![See https://battleangel.fandom.com/wiki/Endjoy](https://raw.githubusercontent.com/corollari/endjoy/master/endjoy.png)
+
+## Development
+Install from source:
+```bash
+# Optional
+virtualenv --python=python3 venv
+. venv/bin/activate
+# Required
+pip install -r requirements.txt
+# Run
+python endjoy.py
+```
