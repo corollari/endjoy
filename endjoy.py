@@ -3,10 +3,10 @@ import os
 import sys
 import time
 
-checkpoints={}
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
 
+checkpoints={}
 changes=[]
 
 def main():
@@ -40,7 +40,6 @@ def start():
     if os.fork()!=0:
         return "Monitoring started"
     monitor(os.getcwd()) #Start monitoring
-    print('cucked')
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
             with open(clientPipeName, 'w') as writePipe:
