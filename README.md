@@ -2,6 +2,8 @@
 
 > git stash on steroids
 
+## How to
+
 ```bash
 endjoy start # Start recursively monitoring the working directory
 
@@ -19,3 +21,6 @@ endjoy revert NAME # Revert the directory to how it was when the checkpoint NAME
 
 endjoy suicide # Stop monitoring the directory and delete all temporary files created
 ```
+
+## Why the name?
+![See https://battleangel.fandom.com/wiki/Endjoy](https://raw.githubusercontent.com/corollari/endjoy/master/endjoy.png)
