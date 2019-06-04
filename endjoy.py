@@ -60,9 +60,9 @@ def start():
                         writePipe.write(msg)
 
 def revert(to):
-    restoreTime=checkpoints.get(name, default = time.time()-string2secs(name))
-    i=len(changes)
-    while(changes[i]['time']>restoreTime): #FIXME: This doesn't handle properly the possibility of reverting twice
+    restoreTime=checkpoints.get(to, time.time()-string2secs(to))
+    i=len(changes)-1
+    while(i>=0 and changes[i]['time']>restoreTime): #FIXME: This doesn't handle properly the possibility of reverting twice
         applyChange(changes[i])
         i-=1
     return "Restored"
@@ -70,7 +70,7 @@ def revert(to):
 def applyChange(change):
     pass
 
-def string2seconds(time):
+def string2secs(time):
     mult=1
     if time[-1]=="m":
         mult=60
