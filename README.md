@@ -1,4 +1,4 @@
-# Endjoy
+# endjoy
 
 > Ctrl-Z for the filesystem
 
