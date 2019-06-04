@@ -4,6 +4,8 @@ import sys
 import time
 import threading
 from pathlib import Path
+import tempfile
+import shutil
 
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
@@ -27,7 +29,7 @@ def main():
         except:
             print("The server is not running, have you started endjoy?")
 
-def processMsg(args):
+def processMsg(args, tempDir):
     cmd=args[0]
     print(args)
     if cmd=="revert":
@@ -35,9 +37,20 @@ def processMsg(args):
     elif cmd=="checkpoint":
         return checkpoint(args[1])
     elif cmd=="suicide":
-        return suicide()
+        return suicide(tempDir)
     else:
         return "Command not accepted"
+
+def recursiveCopy(src,dst):
+    os.chdir(src)
+    for item in os.listdir():
+        if os.path.isfile(item):
+            shutil.copy(item, dst)
+        elif os.path.isdir(item):
+            newFolder = os.path.join(dst, item)
+            os.mkdir(newFolder)
+            recursiveCopy(os.path.abspath(item), newFolder)
+
 
 def start():
     try: #TODO: Check if already running
@@ -45,6 +58,11 @@ def start():
         os.mkfifo(clientPipeName)
     except:
         return "Already running"
+
+    tempDir = tempfile.mkdtemp(prefix="endjoy_")
+    # print(tempDir)
+    recursiveCopy(os.getcwd(),tempDir)
+
     if os.fork()!=0:
         return "Monitoring started"
     threading.Thread(target=monitor, args=(os.getcwd(),)).start() #Start monitoring
@@ -56,7 +74,7 @@ def start():
                     if len(data)==0:
                         break
                     else:
-                        msg=processMsg(data.split('#'))
+                        msg=processMsg(data.split('#'), tempDir)
                         writePipe.write(msg)
 
 def revert(to):
@@ -82,9 +100,10 @@ def checkpoint(name):
     checkpoints[name]=time.time()
     return "Checkpoint set"
 
-def suicide():
+def suicide(tempDir):
     os.remove(serverPipeName)
     os.remove(clientPipeName)
+    shutil.rmtree(tempDir)
     sys.exit(0)
 
 def monitor(path):
