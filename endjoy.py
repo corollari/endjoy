@@ -60,11 +60,11 @@ def start():
         return "Already running"
 
     tempDir = tempfile.mkdtemp(prefix="endjoy_")
-    # print(tempDir)
-    recursiveCopy(os.getcwd(),tempDir)
+
 
     if os.fork()!=0:
         return "Monitoring started"
+    recursiveCopy(os.getcwd(),tempDir)
     threading.Thread(target=monitor, args=(os.getcwd(),)).start() #Start monitoring
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
