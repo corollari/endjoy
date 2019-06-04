@@ -22,6 +22,8 @@ def main():
             open(serverPipeName, 'w').write("#".join(sys.argv[1:]))
             if cmd!="suicide":
                 print(open(clientPipeName, 'r').read())
+            else:
+                open(clientPipeName, 'r')
         except:
             print("The server is not running, have you started endjoy?")
 
