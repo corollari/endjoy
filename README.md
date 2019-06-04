@@ -23,7 +23,7 @@ endjoy suicide # Stop monitoring the directory and delete all temporary files cr
 ```
 
 ## endjoy vs git
-> tldr: endjoy is git stash on steroids
+> tl;dr: endjoy is git stash on steroids
 
 Endjoy runs in the background whereas git doesn't, this means that:
 - Doesn't require setting explicit checkpoints as with `git commit`
