@@ -2,6 +2,8 @@ import inotify.adapters
 import os 
 import sys
 import time
+import threading
+from pathlib import Path
 
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
@@ -15,13 +17,17 @@ def main():
         print(start())
     else:
         try:
-            open(serverPipeName, 'w').write("#".join(sys.argv))
-            print(open(clientPipeName, 'r').read())
+            if not Path(serverPipeName).exists():
+                raise
+            open(serverPipeName, 'w').write("#".join(sys.argv[1:]))
+            if cmd!="suicide":
+                print(open(clientPipeName, 'r').read())
         except:
             print("The server is not running, have you started endjoy?")
 
 def processMsg(args):
     cmd=args[0]
+    print(args)
     if cmd=="revert":
         return revert(args[1])
     elif cmd=="checkpoint":
@@ -39,16 +45,17 @@ def start():
         return "Already running"
     if os.fork()!=0:
         return "Monitoring started"
-    monitor(os.getcwd()) #Start monitoring
+    threading.Thread(target=monitor, args=(os.getcwd(),)).start() #Start monitoring
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
             with open(clientPipeName, 'w') as writePipe:
                 while True:
-                    data = pipe.read()
-                    if len(data) == 0:
+                    data = readPipe.read()
+                    if len(data)==0:
                         break
                     else:
-                        writePipe.write(processMsg(data.split('#')))
+                        msg=processMsg(data.split('#'))
+                        writePipe.write(msg)
 
 def revert(to):
     restoreTime=checkpoints.get(name, default = time.time()-string2secs(name))
@@ -74,6 +81,8 @@ def checkpoint(name):
     return "Checkpoint set"
 
 def suicide():
+    os.remove(serverPipeName)
+    os.remove(clientPipeName)
     sys.exit(0)
 
 def monitor(path):
@@ -82,8 +91,7 @@ def monitor(path):
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         changes.append({'path':path, 'filename':filename, 'time': time.time(), 'events':type_names})
-        print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(
-              path, filename, type_names))
+        # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
 
 if __name__ == '__main__':
     main()
