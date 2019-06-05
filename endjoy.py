@@ -65,7 +65,7 @@ def start():
     if os.fork()!=0:
         return "Monitoring started"
     recursiveCopy(os.getcwd(),tempDir)
-    threading.Thread(target=monitor, args=(os.getcwd(),)).start() #Start monitoring
+    threading.Thread(target=monitor, args=(os.getcwd(),), daemon=True).start() #Start monitoring
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
             with open(clientPipeName, 'w') as writePipe:
