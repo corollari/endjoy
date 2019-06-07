@@ -35,6 +35,9 @@ def main():
     cmd=sys.argv[1]
     if cmd=="start":
         print(start())
+    elif cmd=="clear":
+        clear()
+        print("Cleared artifacts")
     else:
         try:
             if not Path(serverPipeName).exists():
@@ -69,7 +72,6 @@ def recursiveCopy(src,dst):
             os.mkdir(newFolder)
             recursiveCopy(os.path.abspath(item), newFolder)
 
-
 def start():
     try: #TODO: Check if already running
         os.mkfifo(serverPipeName)
@@ -94,6 +96,10 @@ def start():
                     else:
                         msg=processMsg(data.split('#'), tempDir)
                         writePipe.write(msg)
+
+def clear():
+    os.remove(serverPipeName)
+    os.remove(clientPipeName)
 
 def revert(to):
     restoreTime=checkpoints.get(to, time.time()-string2secs(to))
