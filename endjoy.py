@@ -7,6 +7,24 @@ from pathlib import Path
 import tempfile
 import shutil
 
+class Change:
+    
+    def __init__(self, path, filename, event, timestamp):
+      #TODO: diff
+      self.path = path
+      self.filename = filename
+      self.event = event
+      self.timestamp = timestamp
+
+    def __str__(self):
+      return str(self.timestamp)
+
+    def setDiff():
+      pass
+
+    def unDo():
+      pass
+
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
 
@@ -111,8 +129,9 @@ def monitor(path):
 
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
-        changes.append({'path':path, 'filename':filename, 'time': time.time(), 'events':type_names})
+        # changes.append({'path':path, 'filename':filename, 'time': time.time(), 'events':type_names})
         # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
+        changes.append(Change(path, filename, type_names, time))
 
 if __name__ == '__main__':
     main()
