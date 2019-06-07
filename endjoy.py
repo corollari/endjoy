@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import inotify.adapters
 import os 
 import sys
