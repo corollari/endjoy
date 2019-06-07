@@ -51,3 +51,9 @@ python endjoy.py
 On `start` it spawns a process, that will act as the server, with two threads:
 - One thread subscribes to be notified of changes on all the directories especified via [inotify](http://man7.org/linux/man-pages/man7/inotify.7.html) and stores all the changes along with a timestamp in shared memory
 - Another thread creates a named pipe and listens on it, when endjoy is called again with another command this thread performs whatever command was issued using the data that has been gathered by the first thread (inotify one)
+
+## Authors
+[@luis136](https://github.com/luis136) and [@corollari](https://github.com/corollari)
+
+## License
+[The Unlicense](https://raw.githubusercontent.com/corollari/endjoy/master/LICENSE)
