@@ -6,6 +6,8 @@ import threading
 from pathlib import Path
 import tempfile
 import shutil
+import atexit
+import signal
 
 class Change:
     
@@ -72,6 +74,10 @@ def recursiveCopy(src,dst):
             os.mkdir(newFolder)
             recursiveCopy(os.path.abspath(item), newFolder)
 
+def handle_exit(sig, frame):
+    print('endjoy process has been terminated')
+    sys.exit(0)
+
 def start():
     try: #TODO: Check if already running
         os.mkfifo(serverPipeName)
@@ -84,6 +90,9 @@ def start():
 
     if os.fork()!=0:
         return "Monitoring started"
+    atexit.register(suicide, tempDir)
+    signal.signal(signal.SIGTERM, handle_exit)
+    signal.signal(signal.SIGINT, handle_exit)
     recursiveCopy(os.getcwd(),tempDir)
     threading.Thread(target=monitor, args=(os.getcwd(),), daemon=True).start() #Start monitoring
     while True: #Set up IPC
@@ -125,6 +134,7 @@ def checkpoint(name):
     return "Checkpoint set"
 
 def suicide(tempDir):
+    print("suicided")
     os.remove(serverPipeName)
     os.remove(clientPipeName)
     shutil.rmtree(tempDir)
