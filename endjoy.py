@@ -131,7 +131,7 @@ def monitor(path):
         (_, type_names, path, filename) = event
         # changes.append({'path':path, 'filename':filename, 'time': time.time(), 'events':type_names})
         # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
-        changes.append(Change(path, filename, type_names, time))
+        changes.append(Change(path, filename, type_names, time.time()))
 
 if __name__ == '__main__':
     main()
