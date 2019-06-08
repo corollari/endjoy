@@ -61,7 +61,7 @@ def processMsg(args, tempDir):
     elif cmd=="checkpoint":
         return checkpoint(args[1])
     elif cmd=="suicide":
-        return suicide(tempDir)
+        sys.exit(0)
     else:
         return "Command not accepted"
 
@@ -139,7 +139,6 @@ def suicide(tempDir):
     os.remove(serverPipeName)
     os.remove(clientPipeName)
     shutil.rmtree(tempDir)
-    sys.exit(0)
 
 def monitor(path):
     i = inotify.adapters.InotifyTree(path)
