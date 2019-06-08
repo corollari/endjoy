@@ -97,8 +97,9 @@ def start():
     atexit.register(suicide, tempDir)
     signal.signal(signal.SIGTERM, handle_exit)
     signal.signal(signal.SIGINT, handle_exit)
-    recursiveCopy(os.getcwd(),tempDir)
-    threading.Thread(target=monitor, args=(os.getcwd(),), daemon=True).start() #Start monitoring
+    cwd=os.getcwd()
+    recursiveCopy(cwd, tempDir)
+    threading.Thread(target=monitor, args=(cwd,), daemon=True).start() #Start monitoring
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
             with open(clientPipeName, 'w') as writePipe:
@@ -144,12 +145,12 @@ def suicide(tempDir):
     shutil.rmtree(tempDir)
 
 def monitor(path):
+    print(path)
     i = inotify.adapters.InotifyTree(path)
 
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
-        # changes.append({'path':path, 'filename':filename, 'time': time.time(), 'events':type_names})
-        # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
+        print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
         changes.append(Change(path, filename, type_names, time.time()))
 
 if __name__ == '__main__':
