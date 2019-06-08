@@ -9,15 +9,28 @@ import tempfile
 import shutil
 import atexit
 import signal
+from subprocess import run
 
 class Change:
     
-    def __init__(self, path, filename, event, timestamp):
-      #TODO: diff
-      self.path = path
-      self.filename = filename
-      self.event = event
-      self.timestamp = timestamp
+    def __init__(self, path, filename, event, timestamp, tempDir):
+        self.path = os.path.join(path, filename)
+        self.filename = filename
+        self.event = event
+        self.timestamp = timestamp
+        tempFile=os.path.join(tempDir, filename) #FIXME: Doesn't handle files in directories 
+        if 'IN_CREATE' in event:
+            Path(tempFile).touch()
+        if 'IN_MODIFY' in event:
+            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout)
+            print(self.diff)
+            run(['cp', self.path, tempFile])
+        if 'IN_DELETE' in event:
+            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout)
+            os.remove(tempFile)
+            self.event.append('IN_MODIFY')
+        #if 'IN_IN_CLOSE_WRITE' in event:
+        #    pass
 
     def __str__(self):
       return str(self.timestamp)
@@ -25,8 +38,13 @@ class Change:
     def setDiff():
       pass
 
-    def unDo():
-      pass
+    def unDo(self):
+        if 'IN_DELETE' in self.event:
+            Path(self.path).touch()
+        if 'IN_MODIFY' in self.event:
+            run(['patch'], input=self.diff, encoding='ascii')
+        if 'IN_CREATE' in self.event:
+            os.remove(self.path)
 
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
@@ -91,7 +109,6 @@ def start():
 
     tempDir = tempfile.mkdtemp(prefix="endjoy_")
 
-
     if os.fork()!=0:
         return "Monitoring started"
     atexit.register(suicide, tempDir)
@@ -99,7 +116,7 @@ def start():
     signal.signal(signal.SIGINT, handle_exit)
     cwd=os.getcwd()
     recursiveCopy(cwd, tempDir)
-    threading.Thread(target=monitor, args=(cwd,), daemon=True).start() #Start monitoring
+    threading.Thread(target=monitor, args=(cwd,tempDir,), daemon=True).start() #Start monitoring
     while True: #Set up IPC
         with open(serverPipeName, 'r') as readPipe:
             with open(clientPipeName, 'w') as writePipe:
@@ -119,12 +136,9 @@ def revert(to):
     restoreTime=checkpoints.get(to, time.time()-string2secs(to))
     i=len(changes)-1
     while(i>=0 and changes[i].timestamp>restoreTime): #FIXME: This doesn't handle properly the possibility of reverting twice
-        applyChange(changes[i])
+        changes[i].unDo()
         i-=1
     return "Restored"
-
-def applyChange(change):
-    pass
 
 def string2secs(time):
     mult=1
@@ -144,14 +158,14 @@ def suicide(tempDir):
     os.remove(clientPipeName)
     shutil.rmtree(tempDir)
 
-def monitor(path):
+def monitor(path, tempDir):
     print(path)
     i = inotify.adapters.InotifyTree(path)
 
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
-        changes.append(Change(path, filename, type_names, time.time()))
+        changes.append(Change(path, filename, type_names, time.time(), tempDir))
 
 if __name__ == '__main__':
     main()
