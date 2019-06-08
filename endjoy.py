@@ -22,11 +22,11 @@ class Change:
         if 'IN_CREATE' in event:
             Path(tempFile).touch()
         if 'IN_MODIFY' in event:
-            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout)
+            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
             print(self.diff)
             run(['cp', self.path, tempFile])
         if 'IN_DELETE' in event:
-            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout)
+            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
             os.remove(tempFile)
             self.event.append('IN_MODIFY')
         #if 'IN_IN_CLOSE_WRITE' in event:
@@ -42,7 +42,7 @@ class Change:
         if 'IN_DELETE' in self.event:
             Path(self.path).touch()
         if 'IN_MODIFY' in self.event:
-            run(['patch'], input=self.diff, encoding='ascii')
+            run(['patch'], input=self.diff, encoding='utf-8')
         if 'IN_CREATE' in self.event:
             os.remove(self.path)
 
