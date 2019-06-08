@@ -35,6 +35,9 @@ checkpoints={}
 changes=[]
 
 def main():
+    if len(sys.argv)<2:
+        print("No command given")
+        return
     cmd=sys.argv[1]
     if cmd=="start":
         print(start())
