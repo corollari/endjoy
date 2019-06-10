@@ -139,6 +139,7 @@ def clear():
     os.remove(clientPipeName)
 
 def revert(to):
+    global changes
     restoreTime=checkpoints.get(to, time.time()-string2secs(to))
     i=len(changes)-1
     while(i>=0 and changes[i].timestamp>restoreTime):
