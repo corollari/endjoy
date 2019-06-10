@@ -2,6 +2,11 @@
 
 > Ctrl-Z for the filesystem
 
+## Install
+```bash
+sudo pip install endjoy
+```
+
 ## How to
 
 ```bash
