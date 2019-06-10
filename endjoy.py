@@ -85,7 +85,7 @@ def processMsg(args, tempDir):
     if cmd=="revert":
         return revert(args[1])
     elif cmd=="checkpoint":
-        return checkpoint(args[1])
+        return checkpoint(args[1] if len(args)>=2 else None)
     elif cmd=="suicide":
         sys.exit(0)
     else:
@@ -157,6 +157,8 @@ def string2secs(time):
     return int(time[:-1])*mult
 
 def checkpoint(name):
+    if name==None:
+        return "\n".join(["%s - %d seconds ago"%(k, time.time()-checkpoints[k]) for k in checkpoints.keys()])
     checkpoints[name]=time.time()
     return "Checkpoint set"
 
