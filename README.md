@@ -2,12 +2,16 @@
 
 > Ctrl-Z for the filesystem
 
+## What is endjoy?
+Endjoy is a command line program that allows you to restore all the files in a directory to the state they were in some time ago. Therefore, it allows you to revert modifications, deletions and creations of the files in the watched directory.  
+With this you can just try out any changes without fear, as you can always revert them with a single command.
+
 ## Install
 ```bash
 sudo pip install endjoy
 ```
 
-## How to
+## Usage
 
 ```bash
 ej start # Start recursively monitoring the working directory
@@ -27,17 +31,17 @@ ej revert NAME # Revert the directory to how it was when the checkpoint NAME was
 ej suicide # Stop monitoring the directory and delete all temporary files created
 ```
 
-## endjoy vs git
+## What makes endjoy different from git?
 > tl;dr: endjoy is git stash on steroids
 
-Endjoy runs in the background whereas git doesn't, this means that:
+The most important difference between git and endjoy is that the latter runs in the background whereas git doesn't, this means that:
 - Doesn't require setting explicit checkpoints as with `git commit`
 - Runs asynchronously, so you don't have to wait for `git` to finish
 - Doesn't require any action till you need to use it to restore a previous state
 
 If you need complex functionality, like merging different commits/checkpoints or moving forward and backwards between them, git is a better choice, as endjoy is much simpler and doesn't implement that
 
-## Why the name?
+## Why is it called endjoy?
 ![See https://battleangel.fandom.com/wiki/Endjoy](https://raw.githubusercontent.com/corollari/endjoy/master/endjoy.png)
 
 ## Development
