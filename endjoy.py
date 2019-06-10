@@ -135,9 +135,10 @@ def clear():
 def revert(to):
     restoreTime=checkpoints.get(to, time.time()-string2secs(to))
     i=len(changes)-1
-    while(i>=0 and changes[i].timestamp>restoreTime): #FIXME: This doesn't handle properly the possibility of reverting twice
+    while(i>=0 and changes[i].timestamp>restoreTime):
         changes[i].unDo()
         i-=1
+    changes = changes[:i] # TODO: Allow redoing changes instead of only undoing 
     return "Restored"
 
 def string2secs(time):
