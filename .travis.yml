@@ -23,7 +23,6 @@ matrix:
       sudo: true
 
 pre_install:
-  - sudo apt-get 
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
 install:
