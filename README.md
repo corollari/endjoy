@@ -41,15 +41,17 @@ If you need complex functionality, like merging different commits/checkpoints or
 ![See https://battleangel.fandom.com/wiki/Endjoy](https://raw.githubusercontent.com/corollari/endjoy/master/endjoy.png)
 
 ## Development
-Install from source:
+Install from source (requires poetry):
 ```bash
 # Optional
 virtualenv --python=python3 venv
 . venv/bin/activate
 # Required
-pip install -r requirements.txt
+poetry install
 # Run
 ej
+# Run tests
+pytest
 ```
 
 ## How does it work?
