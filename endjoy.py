@@ -94,6 +94,7 @@ def processMsg(args, tempDir):
 def recursiveCopy(src,dst):
     os.chdir(src)
     for item in os.listdir():
+        os.chdir(src)
         if os.path.isfile(item):
             shutil.copy(item, dst)
         elif os.path.isdir(item):
