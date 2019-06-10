@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "endjoy"
+version = "0.1.0"
+description = "Ctrl-Z for the filesystem"
+authors = ["Albert <github@albert.sh>", "Luis"]
+license = "Unlicense"
+readme = 'README.md'
+repository = "https://github.com/corollari/endjoy"
+homepage = "https://github.com/corollari/endjoy"
+
+[tool.poetry.dependencies]
+python = "^3"
+inotify = "^0.2.10"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+endjoy = 'endjoy:main'

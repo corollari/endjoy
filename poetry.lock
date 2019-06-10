@@ -1,0 +1,26 @@
+[[package]]
+category = "main"
+description = "An adapter to Linux kernel support for inotify directory-watching."
+name = "inotify"
+optional = false
+python-versions = "*"
+version = "0.2.10"
+
+[package.dependencies]
+nose = "*"
+
+[[package]]
+category = "main"
+description = "nose extends unittest to make testing easier"
+name = "nose"
+optional = false
+python-versions = "*"
+version = "1.3.7"
+
+[metadata]
+content-hash = "d0c15062fc3dcc6cc04fb781c8831cc9b561b67c9616df85b7813e3fdfb24a2b"
+python-versions = "^3"
+
+[metadata.hashes]
+inotify = ["397f8785450e41f606fe4eb6f5e8e0a1c70b354b56495225fc6c6fe7e07db0c9", "974a623a338482b62e16d4eb705fb863ed33ec178680fc3e96ccdf0df6c02a07"]
+nose = ["9ff7c6cc443f8c51994b34a667bbcf45afd6d945be7477b52e97516fd17c53ac", "dadcddc0aefbf99eea214e0f1232b94f2fa9bd98fa8353711dacb112bfcbbb2a", "f1bffef9cbc82628f6e7d7b40d7e255aefaa1adb6a1b1d26c69a8b79e6208a98"]

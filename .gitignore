@@ -1,1 +1,4 @@
 venv
+dist
+endjoy.egg-info
+__pycache__
