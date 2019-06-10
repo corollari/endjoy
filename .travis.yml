@@ -32,4 +32,4 @@ deploy:
     on:
       branch: master
       python: '3.7'
-      condition: $CC = gcc
+      condition: $(echo a) = gcc
