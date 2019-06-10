@@ -19,18 +19,23 @@ class Change:
         self.event = event
         self.timestamp = timestamp
         tempFile=os.path.join(tempDir, filename) #FIXME: Doesn't handle files in directories 
-        if 'IN_CREATE' in event:
+
+        if 'IN_MOVED_TO' in self.event:
+            if not Path(tempFile).exists():
+                self.event.append('IN_CREATE')
+            self.event.append('IN_MODIFY')
+        if 'IN_MOVED_FROM' in self.event:
+            self.event.append('IN_DELETE')
+
+        if 'IN_CREATE' in self.event:
             Path(tempFile).touch()
-        if 'IN_MODIFY' in event:
+        if 'IN_MODIFY' in self.event:
             self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
-            print(self.diff)
             run(['cp', self.path, tempFile])
-        if 'IN_DELETE' in event:
+        if 'IN_DELETE' in self.event:
             self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
             os.remove(tempFile)
             self.event.append('IN_MODIFY')
-        #if 'IN_IN_CLOSE_WRITE' in event:
-        #    pass
 
     def __str__(self):
       return str(self.timestamp)
