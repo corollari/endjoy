@@ -4,7 +4,9 @@ matrix:
   fast_finish: true
   include:
     - python: 3.6
+      dist: xenial
     - python: 3.7
+      dist: xenial
       sudo: true
     - python: 3.7-dev
       dist: xenial
@@ -20,8 +22,11 @@ matrix:
       dist: xenial
       sudo: true
 
-install:
+pre_install:
+  - sudo apt-get 
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+
+install:
   - poetry install
 
 script:
