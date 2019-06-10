@@ -81,7 +81,6 @@ def main():
 
 def processMsg(args, tempDir):
     cmd=args[0]
-    print(args)
     if cmd=="revert":
         return revert(args[1])
     elif cmd=="checkpoint":
@@ -169,12 +168,11 @@ def suicide(tempDir):
     shutil.rmtree(tempDir)
 
 def monitor(path, tempDir):
-    print(path)
     i = inotify.adapters.InotifyTree(path)
 
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
-        print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
+        # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
         changes.append(Change(path, filename, type_names, time.time(), tempDir))
 
 if __name__ == '__main__':
