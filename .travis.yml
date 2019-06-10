@@ -32,4 +32,4 @@ deploy:
     on:
       branch: master
       python: '3.7'
-      condition: $(git diff HEAD~1 HEAD endjoy.py) = ''
+      condition: $(git diff HEAD~1 HEAD endjoy.py) != ''
