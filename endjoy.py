@@ -19,6 +19,7 @@ class Change:
         self.event = event
         self.timestamp = timestamp
         tempFile=os.path.join(tempDir, filename) #FIXME: Doesn't handle files in directories 
+        self.tempFile=tempFile
 
         if 'IN_MOVED_TO' in self.event:
             if not Path(tempFile).exists():
@@ -33,9 +34,8 @@ class Change:
             self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
             run(['cp', self.path, tempFile])
         if 'IN_DELETE' in self.event:
-            self.diff=str(run(['diff', '-u', self.path, tempFile], capture_output=True).stdout.decode("utf-8"))
+            self.contents=open(tempFile, 'r').read()
             os.remove(tempFile)
-            self.event.append('IN_MODIFY')
 
     def __str__(self):
       return str(self.timestamp)
@@ -44,15 +44,25 @@ class Change:
       pass
 
     def unDo(self):
+        # print(self.event)
         if 'IN_DELETE' in self.event:
-            Path(self.path).touch()
+            # print("create %s"%self.path)
+            open(self.path, 'w+').write(self.contents)
+            open(self.tempFile, 'w+').write(self.contents)
         if 'IN_MODIFY' in self.event:
-            run(['patch'], input=self.diff, encoding='utf-8')
+            # print("modify %s"%self.path)
+            # print(self.diff)
+            run(['patch', '-f', '-s'], input=self.diff, encoding='utf-8')
+            run(['cp', self.path, self.tempFile])
         if 'IN_CREATE' in self.event:
+            # print("delete %s"%self.path)
             os.remove(self.path)
+            os.remove(self.tempFile)
 
 serverPipeName="/tmp/sendjoy.pipe"
 clientPipeName="/tmp/cendjoy.pipe"
+
+reverting=False
 
 checkpoints={}
 changes=[]
@@ -134,17 +144,28 @@ def start():
                         writePipe.write(msg)
 
 def clear():
-    os.remove(serverPipeName)
-    os.remove(clientPipeName)
+    try:
+        os.remove(serverPipeName)
+    except:
+        pass
+    try:
+        os.remove(clientPipeName)
+    except:
+        pass
 
 def revert(to):
-    global changes
-    restoreTime=checkpoints.get(to, time.time()-string2secs(to))
+    global changes, reverting
+    if to in checkpoints:
+        restoreTime=checkpoints[to]
+    else:
+        restoreTime=time.time()-string2secs(to)
     i=len(changes)-1
+    reverting=True
     while(i>=0 and changes[i].timestamp>restoreTime):
         changes[i].unDo()
         i-=1
     changes = changes[:i] # TODO: Allow redoing changes instead of only undoing 
+    reverting=False
     return "Restored"
 
 def string2secs(time):
@@ -162,7 +183,7 @@ def checkpoint(name):
     return "Checkpoint set"
 
 def suicide(tempDir):
-    print("suicided")
+    print("Suicided")
     os.remove(serverPipeName)
     os.remove(clientPipeName)
     shutil.rmtree(tempDir)
@@ -172,8 +193,10 @@ def monitor(path, tempDir):
 
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
-        # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
-        changes.append(Change(path, filename, type_names, time.time(), tempDir))
+        EVENTS_USED=['IN_MOVED_TO', 'IN_MOVED_FROM', 'IN_CREATE', 'IN_MODIFY', 'IN_DELETE']
+        if not reverting and any(ev in EVENTS_USED for ev in type_names):
+            # print("PATH=[{}] FILENAME=[{}] EVENT_TYPES={}".format(path, filename, type_names))
+            changes.append(Change(path, filename, type_names, time.time(), tempDir))
 
 if __name__ == '__main__':
     main()

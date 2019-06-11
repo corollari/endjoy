@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "endjoy"
-version = "0.9.0"
+version = "1.0.0"
 description = "Ctrl-Z for the filesystem"
 authors = ["Albert <github@albert.sh>", "Luis"]
 license = "Unlicense"
